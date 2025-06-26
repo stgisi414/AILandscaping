@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       server: {
         host: true,
         port: 5173,
-        allowedHosts: ['3271aa25-8d54-41ec-a976-e5a515e3ea35-00-32bun4fkjo0hf.janeway.replit.dev', 'ailandscaping.biz']
+        allowedHosts: ['3271aa25-8d54-41ec-a976-e5a515e3ea35-00-32bun4fkjo0hf.janeway.replit.dev', 'ailandscaping.biz', 'ai-landscaping.replit.app']
       },
       preview: {
         host: '0.0.0.0',
