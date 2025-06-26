@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const Logo: React.FC = () => (
@@ -10,23 +11,20 @@ const Logo: React.FC = () => (
       xmlns="http://www.w3.org/2000/svg"
       className="text-[#22573b]"
     >
-      <rect width="24" height="24" rx="12" fill="white"/>
       <path
-        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 10c-2.21 0-4 1.79-4 4h8c0-2.21-1.79-4-4-4zM12 4v4"
+        d="M12 2L2 12h3v8h14v-8h3L12 2z"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="#a3ccab"
       />
       <path
-        d="M9.5 7.5a4.5 4.5 0 0 1 5 0"
-        stroke="currentColor"
+        d="M12 12c0-5 6-5 6 0C18 16 9 17 9 20"
+        stroke="#f8f9fa"
         strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
     <span className="font-bold text-xl text-[#22573b]">AI Landscaping</span>

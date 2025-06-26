@@ -17,27 +17,3 @@ run = ["sh", "-c", "npm run preview"]
 [[ports]]
 localPort = 5173
 externalPort = 80
-
-[[ports]]
-localPort = 5174
-externalPort = 3000
-
-[[ports]]
-localPort = 5175
-externalPort = 3001
-
-[[ports]]
-localPort = 5176
-externalPort = 3002
-
-[workflows]
-runButton = "Start Dev Server"
-
-[[workflows.workflow]]
-name = "Start Dev Server"
-author = 27264320
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
