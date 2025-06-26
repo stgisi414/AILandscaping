@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/genai';
 import Button from './ui/Button';
 import { fal } from "@fal-ai/client";
 
