@@ -15,13 +15,13 @@ const StaticExampleGenerator: React.FC = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [currentProgress, setCurrentProgress] = useState('');
 
-    // Real residential addresses for generating examples
+    // Real residential addresses for generating examples (selected for good house visibility)
     const sampleAddresses = [
-        "123 Maple Street, Anytown, OH 44256", // Typical suburban home
-        "456 Oak Avenue, Springfield, IL 62701", // Classic residential street
-        "789 Pine Drive, Madison, WI 53703", // Normal neighborhood
-        "321 Elm Street, Franklin, TN 37064", // Suburban development
-        "654 Cedar Lane, Plano, TX 75023", // Modern subdivision
+        "1234 Willowbrook Drive, Naperville, IL 60540", // Suburban neighborhood with good house visibility
+        "5678 Oakmont Circle, Cary, NC 27519", // Well-established residential area
+        "9012 Stonegate Lane, Frisco, TX 75034", // Modern suburban development
+        "3456 Heritage Oak Way, Round Rock, TX 78665", // Family neighborhood
+        "7890 Meadowview Court, Apex, NC 27502", // Cul-de-sac with front-facing homes
     ];
 
     const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
