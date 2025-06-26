@@ -24,31 +24,67 @@ const HeroSection: React.FC = () => (
 );
 
 const GallerySection: React.FC = () => {
-    const galleryImages = [
-        { id: 1, src: 'https://picsum.photos/seed/gallery1/500/500', alt: 'Modern minimalist garden' },
-        { id: 2, src: 'https://picsum.photos/seed/gallery2/500/500', alt: 'Lush English garden' },
-        { id: 3, src: 'https://picsum.photos/seed/gallery3/500/500', alt: 'Tropical paradise backyard' },
-        { id: 4, src: 'https://picsum.photos/seed/gallery4/500/500', alt: 'Japanese zen garden' },
-        { id: 5, src: 'https://picsum.photos/seed/gallery5/500/500', alt: 'Desert xeriscape design' },
-        { id: 6, src: 'https://picsum.photos/seed/gallery6/500/500', alt: 'Cozy cottage garden' },
+    const beforeAfterExamples = [
+        {
+            id: 1,
+            beforeSrc: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop&crop=center',
+            afterSrc: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center',
+            title: 'Modern Minimalist Garden',
+            description: 'Clean lines with drought-resistant plants'
+        },
+        {
+            id: 2,
+            beforeSrc: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&h=400&fit=crop&crop=center',
+            afterSrc: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop&crop=center',
+            title: 'Lush English Cottage Garden',
+            description: 'Colorful blooms and natural pathways'
+        },
+        {
+            id: 3,
+            beforeSrc: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop&crop=center',
+            afterSrc: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=600&h=400&fit=crop&crop=center',
+            title: 'Tropical Paradise Backyard',
+            description: 'Palm trees and vibrant tropical plants'
+        }
     ];
 
     return (
         <section className="py-16 bg-[#6b4f4f]/5">
             <div className="container mx-auto px-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#22573b]">
-                    Explore a World of Possibilities
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#22573b]">
+                    Real Transformations by Our AI
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {galleryImages.map(image => (
-                        <div key={image.id} className="group relative overflow-hidden rounded-lg shadow-lg">
-                            <img src={image.src} alt={image.alt} className="w-full h-full object-cover aspect-square transform group-hover:scale-110 transition-transform duration-500 ease-in-out" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0"></div>
-                            <div className="absolute bottom-0 left-0 p-4">
-                                <h3 className="text-white font-semibold text-lg">{image.alt}</h3>
+                <p className="text-center text-[#212529]/80 mb-12 max-w-2xl mx-auto">
+                    See how our AI transforms ordinary yards into stunning landscapes in seconds
+                </p>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {beforeAfterExamples.map(example => (
+                        <div key={example.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div className="grid grid-cols-2 gap-0">
+                                <div className="relative">
+                                    <img src={example.beforeSrc} alt={`${example.title} - Before`} className="w-full h-48 object-cover" />
+                                    <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                                        BEFORE
+                                    </div>
+                                </div>
+                                <div className="relative">
+                                    <img src={example.afterSrc} alt={`${example.title} - After`} className="w-full h-48 object-cover" />
+                                    <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                                        AFTER
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-6">
+                                <h3 className="font-bold text-lg text-[#22573b] mb-2">{example.title}</h3>
+                                <p className="text-[#212529]/70 text-sm">{example.description}</p>
                             </div>
                         </div>
                     ))}
+                </div>
+                <div className="text-center mt-12">
+                    <Button variant="secondary" className="py-3 px-8">
+                        See More Examples
+                    </Button>
                 </div>
             </div>
         </section>
