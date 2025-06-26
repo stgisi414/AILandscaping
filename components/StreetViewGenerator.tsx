@@ -36,8 +36,8 @@ const StreetViewGenerator: React.FC = () => {
                 throw new Error("Google Maps API Key is not configured.");
             }
 
-            // Step 1: Fetch Street View image with better positioning
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=0&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
+            // Step 1: Fetch Street View image with correct heading (180° rotation)
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=180&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
             if (!streetViewResponse.ok) {
                 throw new Error('Could not find a Street View image for this address. Please try a different address.');
@@ -62,18 +62,17 @@ const StreetViewGenerator: React.FC = () => {
                 credentials: process.env.FAL_API_KEY
             });
 
-            const landscapePrompt = "Transform only the yard and landscaping of this house while keeping the exact same house structure, architecture, colors, and positioning. Add beautiful professional landscaping including: lush green lawn, colorful flower beds with seasonal blooms, mature shade trees, decorative shrubs, stone or brick walkways, outdoor lighting fixtures, well-maintained garden borders, and enhanced curb appeal. Keep the house, driveway, roof, windows, and any existing structures exactly as they are. Only enhance and beautify the yard, grass, plants, and outdoor landscaping elements to create a stunning, magazine-worthy exterior.";
+            const landscapePrompt = "Enhance ONLY the landscaping and yard areas. Keep the house, building structure, architecture, colors, roof, windows, doors, and driveway EXACTLY the same. Only improve: grass to lush green lawn, add flower beds, plant trees, add shrubs, improve garden borders. Do NOT change the house structure, colors, or style. Preserve all existing buildings perfectly.";
 
-            // Use Fal.ai FLUX.1 Image-to-Image for landscaping transformation
-            const result = await fal.subscribe("fal-ai/flux/dev/image-to-image", {
+            // Use Fal.ai FLUX Pro Kontext for better preservation of house structure
+            const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
                 input: {
                     image_url: `data:${imageBlob.type};base64,${base64data}`,
                     prompt: landscapePrompt,
-                    strength: 0.75,
-                    guidance_scale: 7.5,
-                    num_inference_steps: 28,
-                    seed: Math.floor(Math.random() * 1000000),
-                    enable_safety_checker: true
+                    strength: 0.4,
+                    guidance_scale: 3.5,
+                    num_inference_steps: 20,
+                    seed: Math.floor(Math.random() * 1000000)
                 },
                 logs: true,
                 onQueueUpdate: (update) => {
