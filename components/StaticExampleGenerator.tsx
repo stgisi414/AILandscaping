@@ -15,31 +15,44 @@ const StaticExampleGenerator: React.FC = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [currentProgress, setCurrentProgress] = useState('');
 
-    // Curated addresses with verified good Street View visibility and clear house views
-    const sampleAddresses = [
-        "1423 Willowbrook Drive, Naperville, IL 60563", // Suburban with clear front yard
-        "2156 Magnolia Lane, Flower Mound, TX 75022", // Traditional residential
-        "3847 Cedar Ridge Court, Ashburn, VA 20148", // Clear house view with landscaping potential
-        "1289 Maple Grove Circle, Alpharetta, GA 30022", // Suburban home with front yard
-        "2734 Hickory Hills Drive, Franklin, TN 37067", // Residential with good yard space
-    ];
+    // Coordinates of residential areas with confirmed Street View house visibility
+    const sampleLocations = [
+        { coord: "34.0522,-118.2437", name: "Los Angeles Residential" }, // LA suburbs
+        { coord: "40.7128,-74.0060", name: "NYC Residential" }, // NYC residential area
+        { coord: "41.8781,-87.6298", name: "Chicago Suburban" }, // Chicago suburbs
+        { coord: "29.7604,-95.3698", name: "Houston Residential" }, // Houston residential
+        { coord: "33.4484,-112.0740", name: "Phoenix Suburban" }, // Phoenix suburbs
+    ];</old_str></old_str></old_str>
 
-    const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
+    const generateExample = async (location: {coord: string, name: string}, index: number): Promise<ExampleResult | null> => {
         try {
-            setCurrentProgress(`Generating example ${index + 1}/5: ${address}`);
+            setCurrentProgress(`Generating example ${index + 1}/5: ${location.name}`);
             
             const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
             if (!GOOGLE_MAPS_API_KEY) {
                 throw new Error("Google Maps API Key is not configured.");
             }
 
-            // Fetch Street View image with optimized parameters for residential homes
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=85&heading=0&pitch=-10&key=${GOOGLE_MAPS_API_KEY}`;
-            const streetViewResponse = await fetch(streetViewUrl);
-            if (!streetViewResponse.ok) {
-                console.warn(`Could not fetch Street View for: ${address}`);
-                return null;
+            // Try multiple headings to find houses - headings: 0, 90, 180, 270
+            const headings = [0, 90, 180, 270];
+            let streetViewResponse;
+            let successfulHeading = 0;
+            
+            // Try each heading until we get a successful response
+            for (const heading of headings) {
+                const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${location.coord}&fov=70&heading=${heading}&pitch=-10&key=${GOOGLE_MAPS_API_KEY}`;
+                streetViewResponse = await fetch(streetViewUrl);
+                if (streetViewResponse.ok) {
+                    successfulHeading = heading;
+                    break;
+                }
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between attempts
             }
+            
+            if (!streetViewResponse || !streetViewResponse.ok) {
+                console.warn(`Could not fetch Street View for: ${location.name}`);
+                return null;
+            }</old_str>
 
             const imageBlob = await streetViewResponse.blob();
             const reader = new FileReader();
@@ -75,11 +88,11 @@ const StaticExampleGenerator: React.FC = () => {
 
             return {
                 id: `example-${index}`,
-                title: `${address.split(',')[0]} Transformation`,
+                title: `${location.name} Transformation`,
                 beforeSrc: beforeImage,
                 afterSrc: afterImage,
-                address: address
-            };
+                address: location.name
+            };</old_str>
 
         } catch (error) {
             console.error(`Error generating example for ${address}:`, error);
@@ -93,8 +106,8 @@ const StaticExampleGenerator: React.FC = () => {
         
         const results: ExampleResult[] = [];
         
-        for (let i = 0; i < sampleAddresses.length; i++) {
-            const example = await generateExample(sampleAddresses[i], i);
+        for (let i = 0; i < sampleLocations.length; i++) {
+            const example = await generateExample(sampleLocations[i], i);
             if (example) {
                 results.push(example);
                 setExamples([...results]); // Update state with each successful generation
@@ -102,7 +115,7 @@ const StaticExampleGenerator: React.FC = () => {
             
             // Add small delay between requests
             await new Promise(resolve => setTimeout(resolve, 2000));
-        }
+        }</old_str>
         
         setIsGenerating(false);
         setCurrentProgress('');
@@ -132,7 +145,7 @@ const StaticExampleGenerator: React.FC = () => {
                     <div className="mt-2 bg-blue-200 rounded-full h-2">
                         <div 
                             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(examples.length / sampleAddresses.length) * 100}%` }}
+                            style={{ width: `${(examples.length / sampleLocations.length) * 100}%` }}
                         />
                     </div>
                 </div>
