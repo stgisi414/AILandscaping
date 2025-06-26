@@ -17,11 +17,11 @@ const StaticExampleGenerator: React.FC = () => {
 
     // Curated addresses with verified good Street View visibility and clear house views
     const sampleAddresses = [
-        "2847 Rosewood Court, Plano, TX 75025", // Clear suburban home with front yard
-        "456 Maple Avenue, Arlington, VA 22201", // Clear front yard visibility
-        "789 Pine Drive, Westfield, NJ 07090", // Traditional neighborhood
-        "321 Elm Street, Evanston, IL 60201", // Classic suburban homes
-        "1456 Oakmont Drive, Cary, NC 27519", // Well-positioned residential home
+        "1423 Willowbrook Drive, Naperville, IL 60563", // Suburban with clear front yard
+        "2156 Magnolia Lane, Flower Mound, TX 75022", // Traditional residential
+        "3847 Cedar Ridge Court, Ashburn, VA 20148", // Clear house view with landscaping potential
+        "1289 Maple Grove Circle, Alpharetta, GA 30022", // Suburban home with front yard
+        "2734 Hickory Hills Drive, Franklin, TN 37067", // Residential with good yard space
     ];
 
     const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
@@ -33,8 +33,8 @@ const StaticExampleGenerator: React.FC = () => {
                 throw new Error("Google Maps API Key is not configured.");
             }
 
-            // Fetch Street View image with optimized parameters
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=75&heading=0&pitch=-5&key=${GOOGLE_MAPS_API_KEY}`;
+            // Fetch Street View image with optimized parameters for residential homes
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=85&heading=0&pitch=-10&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
             if (!streetViewResponse.ok) {
                 console.warn(`Could not fetch Street View for: ${address}`);
@@ -56,16 +56,16 @@ const StaticExampleGenerator: React.FC = () => {
                 credentials: process.env.FAL_API_KEY
             });
 
-            const landscapePrompt = "Enhance ONLY the front yard landscaping while preserving the house completely unchanged. Add: well-maintained green grass, neat flower beds with colorful blooms, trimmed shrubs along the foundation, a few small decorative trees, clean walkway edges, and simple garden borders. Keep the transformation subtle and realistic. Maintain the exact same house color, architecture, windows, doors, roof, and driveway. Focus on making the yard look professionally maintained but not overly dramatic.";
+            const landscapePrompt = "Improve ONLY the landscaping and grass areas while keeping the house, driveway, sidewalks, and street completely unchanged. Add lush green grass, colorful flower beds near the house foundation, neatly trimmed bushes, and small decorative plants. Keep all hardscaping (driveways, walkways, roads) exactly the same. Make the yard look well-maintained and professionally landscaped but realistic and subtle. Do not change any building structures, colors, or architectural features.";
 
-            // Generate AI landscape with more conservative settings
+            // Generate AI landscape with very conservative settings
             const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
                 input: {
                     image_url: beforeImage,
                     prompt: landscapePrompt,
-                    strength: 0.25, // Reduced strength for more subtle changes
-                    guidance_scale: 2.5, // Lower guidance for more natural results
-                    num_inference_steps: 15, // Fewer steps for faster, less processed look
+                    strength: 0.15, // Very low strength to preserve original structure
+                    guidance_scale: 2.0, // Lower guidance for more natural results
+                    num_inference_steps: 12, // Fewer steps for less dramatic changes
                     seed: Math.floor(Math.random() * 1000000)
                 },
                 logs: true,
