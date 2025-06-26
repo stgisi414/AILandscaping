@@ -62,7 +62,7 @@ const StreetViewGenerator: React.FC = () => {
                 credentials: process.env.FAL_API_KEY
             });
 
-            const landscapePrompt = "Enhance ONLY the landscaping and yard areas. Keep the house, building structure, architecture, colors, roof, windows, doors, and driveway EXACTLY the same. Only improve: grass to lush green lawn, add flower beds, plant trees, add shrubs, improve garden borders. Do NOT change the house structure, colors, or style. Preserve all existing buildings perfectly.";
+            const landscapePrompt = "Transform ONLY the landscaping and yard areas into a stunning, professionally designed outdoor space. Keep the house, building structure, architecture, colors, roof, windows, doors, and driveway EXACTLY the same. Create a vibrant, inviting landscape with: lush emerald green lawn with perfect edging, colorful flower beds with blooming roses and seasonal flowers, mature shade trees strategically placed, well-defined garden borders with decorative stone or brick edging, layered plantings with varying heights and textures, ornamental shrubs and bushes, and a cohesive design that enhances curb appeal. Style should be elegant and professionally maintained. Do NOT change the house structure, colors, or architectural style. Preserve all existing buildings perfectly.";
 
             // Use Fal.ai FLUX Pro Kontext for better preservation of house structure
             const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
