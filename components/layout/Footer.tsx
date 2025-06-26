@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Logo from '../Logo';
+
 
 const SocialIcon: React.FC<{ children: React.ReactNode; href: string }> = ({ children, href }) => (
     <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#f8f9fa] hover:text-[#a3ccab] transition-colors">
@@ -14,7 +14,10 @@ const Footer: React.FC = () => {
             <div className="container mx-auto px-6 py-12">
                 <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
                     <div className="flex-1">
-                        <Logo />
+                        <div className="flex items-center space-x-2">
+                            <img src="/logo.png" alt="AI Landscaping" className="w-9 h-9" />
+                            <span className="font-bold text-xl text-[#f8f9fa]">AI Landscaping</span>
+                        </div>
                         <p className="max-w-xs mt-4 text-sm text-[#a3ccab]">
                             Transforming your property's curb appeal with the power of artificial intelligence.
                         </p>

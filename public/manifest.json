@@ -1,0 +1,23 @@
+
+{
+  "name": "AI Landscaping - Dream Yard. Instant Design.",
+  "short_name": "AI Landscaping",
+  "description": "Upload a photo of your yard and our AI will generate beautiful landscaping designs in seconds.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#22573b",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
