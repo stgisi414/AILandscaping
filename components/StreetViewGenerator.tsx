@@ -35,8 +35,8 @@ const StreetViewGenerator: React.FC = () => {
                 throw new Error("Google Maps API Key is not configured.");
             }
 
-            // Step 1: Fetch Street View image
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=80&heading=235&pitch=10&key=${GOOGLE_MAPS_API_KEY}`;
+            // Step 1: Fetch Street View image with better positioning
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=0&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
             if (!streetViewResponse.ok) {
                 throw new Error('Could not find a Street View image for this address. Please try a different address.');
