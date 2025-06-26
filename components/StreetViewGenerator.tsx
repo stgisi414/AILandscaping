@@ -46,41 +46,57 @@ const StreetViewGenerator: React.FC = () => {
                 throw new Error("Gemini API Key is not configured.");
             }
 
-            // Step 1: First get geocoding to find the exact coordinates and determine best heading
+            // Step 1: Get geocoding to find the exact coordinates
             const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_API_KEY}`;
             const geocodeResponse = await fetch(geocodeUrl);
+            
+            if (!geocodeResponse.ok) {
+                throw new Error('Failed to connect to Google Maps API. Please try again.');
+            }
+            
             const geocodeData = await geocodeResponse.json();
             
-            if (geocodeData.status !== 'OK' || !geocodeData.results.length) {
-                throw new Error('Could not find the specified address. Please check the address and try again.');
+            if (geocodeData.status !== 'OK') {
+                if (geocodeData.status === 'ZERO_RESULTS') {
+                    throw new Error('Could not find the specified address. Please check the address and try again.');
+                } else if (geocodeData.status === 'REQUEST_DENIED') {
+                    throw new Error('Google Maps API access denied. Please check API key configuration.');
+                } else {
+                    throw new Error(`Geocoding failed: ${geocodeData.status}. Please try again.`);
+                }
+            }
+            
+            if (!geocodeData.results || geocodeData.results.length === 0) {
+                throw new Error('No results found for the specified address. Please check the address and try again.');
             }
 
             const location = geocodeData.results[0].geometry.location;
             const lat = location.lat;
             const lng = location.lng;
 
-            // Try multiple headings to find the best view of the house
-            const headings = [0, 90, 180, 270]; // North, East, South, West
-            let bestHeading = 0;
-            let streetViewUrl = '';
-
-            // Use the first heading that works, prioritizing front-facing views
-            for (const heading of headings) {
-                const testUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${lat},${lng}&fov=90&heading=${heading}&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
-                const testResponse = await fetch(testUrl);
-                if (testResponse.ok) {
-                    streetViewUrl = testUrl;
-                    bestHeading = heading;
-                    break;
-                }
+            // Step 2: Check Street View availability using metadata API first
+            const metadataUrl = `https://maps.googleapis.com/maps/api/streetview/metadata?location=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`;
+            const metadataResponse = await fetch(metadataUrl);
+            const metadataData = await metadataResponse.json();
+            
+            if (metadataData.status !== 'OK') {
+                throw new Error('Street View is not available for this location. Please try a different address.');
             }
 
-            if (!streetViewUrl) {
-                throw new Error('Could not find a Street View image for this address. The location may not have Street View coverage.');
-            }
-
+            // Step 3: Get the Street View image with optimal settings
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${lat},${lng}&fov=90&heading=0&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
+            
+            if (!streetViewResponse.ok) {
+                throw new Error('Failed to fetch Street View image. Please try again.');
+            }
+            
             const imageBlob = await streetViewResponse.blob();
+            
+            // Verify we got an actual image and not an error response
+            if (imageBlob.size < 1000) {
+                throw new Error('Street View image not available for this location. Please try a different address.');
+            }
 
             const reader = new FileReader();
             const base64data = await new Promise<string>((resolve, reject) => {
