@@ -59,7 +59,7 @@ const StreetViewGenerator: React.FC = () => {
 
             // Step 2: Configure Fal.ai client
             fal.config({
-                credentials: process.env.API_KEY
+                credentials: process.env.FAL_API_KEY
             });
 
             const landscapePrompt = "Transform only the yard and landscaping of this house while keeping the exact same house structure, architecture, colors, and positioning. Add beautiful professional landscaping including: lush green lawn, colorful flower beds with seasonal blooms, mature shade trees, decorative shrubs, stone or brick walkways, outdoor lighting fixtures, well-maintained garden borders, and enhanced curb appeal. Keep the house, driveway, roof, windows, and any existing structures exactly as they are. Only enhance and beautify the yard, grass, plants, and outdoor landscaping elements to create a stunning, magazine-worthy exterior.";
