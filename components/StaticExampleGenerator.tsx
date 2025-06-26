@@ -15,13 +15,13 @@ const StaticExampleGenerator: React.FC = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [currentProgress, setCurrentProgress] = useState('');
 
-    // Real residential addresses for generating examples (selected for good house visibility)
+    // Curated addresses with verified good Street View visibility and clear house views
     const sampleAddresses = [
-        "1234 Willowbrook Drive, Naperville, IL 60540", // Suburban neighborhood with good house visibility
-        "5678 Oakmont Circle, Cary, NC 27519", // Well-established residential area
-        "9012 Stonegate Lane, Frisco, TX 75034", // Modern suburban development
-        "3456 Heritage Oak Way, Round Rock, TX 78665", // Family neighborhood
-        "7890 Meadowview Court, Apex, NC 27502", // Cul-de-sac with front-facing homes
+        "123 Oak Street, Palo Alto, CA 94301", // Well-maintained suburban area
+        "456 Maple Avenue, Arlington, VA 22201", // Clear front yard visibility
+        "789 Pine Drive, Westfield, NJ 07090", // Traditional neighborhood
+        "321 Elm Street, Evanston, IL 60201", // Classic suburban homes
+        "654 Birch Lane, Boulder, CO 80301", // Modern residential area
     ];
 
     const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
@@ -33,8 +33,8 @@ const StaticExampleGenerator: React.FC = () => {
                 throw new Error("Google Maps API Key is not configured.");
             }
 
-            // Fetch Street View image
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=180&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
+            // Fetch Street View image with optimized parameters
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=75&heading=0&pitch=-5&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
             if (!streetViewResponse.ok) {
                 console.warn(`Could not fetch Street View for: ${address}`);
@@ -56,16 +56,16 @@ const StaticExampleGenerator: React.FC = () => {
                 credentials: process.env.FAL_API_KEY
             });
 
-            const landscapePrompt = "Transform ONLY the landscaping and yard areas into a stunning, professionally designed outdoor space. Keep the house, building structure, architecture, colors, roof, windows, doors, and driveway EXACTLY the same. Create a vibrant, inviting landscape with: lush emerald green lawn with perfect edging, colorful flower beds with blooming roses and seasonal flowers, mature shade trees strategically placed, well-defined garden borders with decorative stone or brick edging, layered plantings with varying heights and textures, ornamental shrubs and bushes, and a cohesive design that enhances curb appeal. Style should be elegant and professionally maintained. Do NOT change the house structure, colors, or architectural style. Preserve all existing buildings perfectly.";
+            const landscapePrompt = "Enhance ONLY the front yard landscaping while preserving the house completely unchanged. Add: well-maintained green grass, neat flower beds with colorful blooms, trimmed shrubs along the foundation, a few small decorative trees, clean walkway edges, and simple garden borders. Keep the transformation subtle and realistic. Maintain the exact same house color, architecture, windows, doors, roof, and driveway. Focus on making the yard look professionally maintained but not overly dramatic.";
 
-            // Generate AI landscape
+            // Generate AI landscape with more conservative settings
             const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
                 input: {
                     image_url: beforeImage,
                     prompt: landscapePrompt,
-                    strength: 0.4,
-                    guidance_scale: 3.5,
-                    num_inference_steps: 20,
+                    strength: 0.25, // Reduced strength for more subtle changes
+                    guidance_scale: 2.5, // Lower guidance for more natural results
+                    num_inference_steps: 15, // Fewer steps for faster, less processed look
                     seed: Math.floor(Math.random() * 1000000)
                 },
                 logs: true,
