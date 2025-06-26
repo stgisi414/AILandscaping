@@ -1,3 +1,4 @@
+
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -17,7 +18,8 @@ export default defineConfig(({ mode }) => {
       },
       server: {
         host: true,
-        port: 5173
+        port: 5173,
+        allowedHosts: ['3271aa25-8d54-41ec-a976-e5a515e3ea35-00-32bun4fkjo0hf.janeway.replit.dev', 'ailandscaping.biz']
       },
       preview: {
         host: '0.0.0.0',
