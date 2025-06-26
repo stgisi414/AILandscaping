@@ -1,13 +1,16 @@
-
 import React from 'react';
 import HomePage from './pages/HomePage';
+import ExampleGeneratorPage from './pages/ExampleGeneratorPage';
 
 const App: React.FC = () => {
-  return (
-    <div className="bg-[#f8f9fa] text-[#212529] min-h-screen">
-      <HomePage />
-    </div>
-  );
+  // Simple routing - check URL path
+  const path = window.location.pathname;
+
+  if (path === '/generate-examples') {
+    return <ExampleGeneratorPage />;
+  }
+
+  return <HomePage />);
 };
 
 export default App;
