@@ -34,12 +34,12 @@ const StreetViewGenerator: React.FC = () => {
         try {
             // Check for required API keys
             const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-            const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+            const API_KEY = process.env.API_KEY;
             
             if (!GOOGLE_MAPS_API_KEY) {
                 throw new Error("Google Maps API Key is not configured.");
             }
-            if (!GEMINI_API_KEY) {
+            if (!API_KEY) {
                 throw new Error("Gemini API Key is not configured.");
             }
 
@@ -61,7 +61,7 @@ const StreetViewGenerator: React.FC = () => {
             setBeforeImage(`data:${imageBlob.type};base64,${base64data}`);
 
             // Step 2: Use Gemini to analyze the landscaping and suggest improvements
-            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+            const genAI = new GoogleGenerativeAI(API_KEY);
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
             const analysisPrompt = `Analyze this street view image of a house and its current landscaping. Provide specific, realistic recommendations for improving the landscaping while keeping the house structure exactly the same. Focus on:
