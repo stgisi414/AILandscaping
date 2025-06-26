@@ -24,27 +24,28 @@ const HeroSection: React.FC = () => (
 );
 
 const GallerySection: React.FC = () => {
+    // TODO: Replace these placeholder URLs with actual generated examples from /generate-examples
     const beforeAfterExamples = [
         {
             id: 1,
-            beforeSrc: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop&crop=center',
-            afterSrc: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center',
-            title: 'Modern Minimalist Garden',
-            description: 'Clean lines with drought-resistant plants'
+            beforeSrc: '/api/placeholder/600/400', // Replace with real before image URL
+            afterSrc: '/api/placeholder/600/400', // Replace with real after image URL  
+            title: 'Willowbrook Drive Transformation',
+            description: 'Suburban home with enhanced curb appeal'
         },
         {
             id: 2,
-            beforeSrc: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&h=400&fit=crop&crop=center',
-            afterSrc: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop&crop=center',
-            title: 'Lush English Cottage Garden',
-            description: 'Colorful blooms and natural pathways'
+            beforeSrc: '/api/placeholder/600/400', // Replace with real before image URL
+            afterSrc: '/api/placeholder/600/400', // Replace with real after image URL
+            title: 'Oakmont Circle Makeover', 
+            description: 'Professional landscaping design'
         },
         {
             id: 3,
-            beforeSrc: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop&crop=center',
-            afterSrc: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=600&h=400&fit=crop&crop=center',
-            title: 'Tropical Paradise Backyard',
-            description: 'Palm trees and vibrant tropical plants'
+            beforeSrc: '/api/placeholder/600/400', // Replace with real before image URL
+            afterSrc: '/api/placeholder/600/400', // Replace with real after image URL
+            title: 'Stonegate Lane Enhancement',
+            description: 'Modern residential landscape upgrade'
         }
     ];
 

@@ -57,18 +57,24 @@ const BeforeAfterSlider: React.FC = () => {
         onTouchStart={handleMouseDown}
       >
         <img
-          src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1280&h=720&fit=crop&crop=center"
+          src="/api/placeholder/1280/720"
           alt="Before landscaping"
           className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1280&h=720&fit=crop&crop=center";
+          }}
         />
         <div
           className="absolute inset-0 w-full h-full overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >
           <img
-            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1280&h=720&fit=crop&crop=center"
+            src="/api/placeholder/1280/720"
             alt="After AI landscaping"
             className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1280&h=720&fit=crop&crop=center";
+            }}
           />
         </div>
         
