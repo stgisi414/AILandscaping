@@ -10,7 +10,7 @@ const App: React.FC = () => {
     return <ExampleGeneratorPage />;
   }
 
-  return <HomePage />);
+  return <HomePage />;
 };
 
 export default App;
