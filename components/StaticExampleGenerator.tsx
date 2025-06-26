@@ -15,13 +15,13 @@ const StaticExampleGenerator: React.FC = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [currentProgress, setCurrentProgress] = useState('');
 
-    // Real addresses for generating examples
+    // Real residential addresses for generating examples
     const sampleAddresses = [
-        "1600 Pennsylvania Avenue NW, Washington, DC 20500", // White House
-        "350 Fifth Avenue, New York, NY 10118", // Empire State Building area
-        "1 Hacker Way, Menlo Park, CA 94301", // Facebook HQ area
-        "1600 Amphitheatre Parkway, Mountain View, CA 94043", // Google HQ area
-        "2101 Fourth Avenue, Seattle, WA 98121", // Amazon area
+        "123 Maple Street, Anytown, OH 44256", // Typical suburban home
+        "456 Oak Avenue, Springfield, IL 62701", // Classic residential street
+        "789 Pine Drive, Madison, WI 53703", // Normal neighborhood
+        "321 Elm Street, Franklin, TN 37064", // Suburban development
+        "654 Cedar Lane, Plano, TX 75023", // Modern subdivision
     ];
 
     const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
