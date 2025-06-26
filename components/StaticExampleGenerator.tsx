@@ -17,11 +17,11 @@ const StaticExampleGenerator: React.FC = () => {
 
     // Curated addresses with verified good Street View visibility and clear house views
     const sampleAddresses = [
-        "123 Oak Street, Palo Alto, CA 94301", // Well-maintained suburban area
+        "2847 Rosewood Court, Plano, TX 75025", // Clear suburban home with front yard
         "456 Maple Avenue, Arlington, VA 22201", // Clear front yard visibility
         "789 Pine Drive, Westfield, NJ 07090", // Traditional neighborhood
         "321 Elm Street, Evanston, IL 60201", // Classic suburban homes
-        "654 Birch Lane, Boulder, CO 80301", // Modern residential area
+        "1456 Oakmont Drive, Cary, NC 27519", // Well-positioned residential home
     ];
 
     const generateExample = async (address: string, index: number): Promise<ExampleResult | null> => {
