@@ -22,7 +22,7 @@ const StaticExampleGenerator: React.FC = () => {
         { coord: "41.8781,-87.6298", name: "Chicago Suburban" }, // Chicago suburbs
         { coord: "29.7604,-95.3698", name: "Houston Residential" }, // Houston residential
         { coord: "33.4484,-112.0740", name: "Phoenix Suburban" }, // Phoenix suburbs
-    ];</old_str></old_str></old_str>
+    ];
 
     const generateExample = async (location: {coord: string, name: string}, index: number): Promise<ExampleResult | null> => {
         try {
@@ -52,7 +52,7 @@ const StaticExampleGenerator: React.FC = () => {
             if (!streetViewResponse || !streetViewResponse.ok) {
                 console.warn(`Could not fetch Street View for: ${location.name}`);
                 return null;
-            }</old_str>
+            }
 
             const imageBlob = await streetViewResponse.blob();
             const reader = new FileReader();
@@ -92,7 +92,7 @@ const StaticExampleGenerator: React.FC = () => {
                 beforeSrc: beforeImage,
                 afterSrc: afterImage,
                 address: location.name
-            };</old_str>
+            };
 
         } catch (error) {
             console.error(`Error generating example for ${address}:`, error);
@@ -115,7 +115,7 @@ const StaticExampleGenerator: React.FC = () => {
             
             // Add small delay between requests
             await new Promise(resolve => setTimeout(resolve, 2000));
-        }</old_str>
+        }
         
         setIsGenerating(false);
         setCurrentProgress('');
