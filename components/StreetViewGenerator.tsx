@@ -58,18 +58,13 @@ const StreetViewGenerator: React.FC = () => {
 
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-            // Step 2: Use Gemini to generate a creative prompt
-            const descriptionPrompt = "You are a professional landscape designer. Analyze this image of a house's front yard. Generate a detailed, descriptive prompt for an AI image generator to create a new version of this yard with beautiful, modern, and lush landscaping. The prompt should describe new plants, pathways, lighting, and a vibrant green lawn, while keeping the original house structure. The prompt should be a single paragraph, ready to be used for image generation.";
-            const descriptionResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-preview-04-17',
-                contents: { parts: [{ inlineData: imageForApi }, { text: descriptionPrompt }] },
-            });
-            const imagePrompt = descriptionResponse.text;
-
-            // Step 3: Use Imagen to generate the new landscape image
+            // Step 2: Use Imagen to directly edit the landscaping while preserving the house
+            const landscapePrompt = "Transform only the yard and landscaping of this house while keeping the exact same house structure, architecture, colors, and positioning. Add beautiful landscaping including: lush green lawn, colorful flower beds, mature trees, decorative shrubs, stone or brick walkways, outdoor lighting, and well-maintained garden borders. Keep the house, driveway, and any existing structures exactly as they are. Only enhance the yard, grass, plants, and outdoor elements.";
+            
             const imageResponse = await ai.models.generateImages({
-                model: 'imagen-3.0-generate-002',
-                prompt: imagePrompt,
+                model: 'imagen-3.0-edit-002',
+                prompt: landscapePrompt,
+                referenceImages: [{ image: imageForApi }],
                 config: { numberOfImages: 1, outputMimeType: 'image/jpeg' },
             });
             const base64ImageBytes = imageResponse.generatedImages[0].image.imageBytes;
