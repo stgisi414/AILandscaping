@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import Button from './ui/Button';
 import { fal } from "@fal-ai/client";
 
@@ -16,6 +16,7 @@ const StreetViewGenerator: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [beforeImage, setBeforeImage] = useState<string | null>(null);
     const [afterImage, setAfterImage] = useState<string | null>(null);
+    const [analysis, setAnalysis] = useState<string | null>(null);
 
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,16 +29,22 @@ const StreetViewGenerator: React.FC = () => {
         setError(null);
         setBeforeImage(null);
         setAfterImage(null);
+        setAnalysis(null);
 
         try {
-            // This is a placeholder for a real API key which should be in a secure environment
+            // Check for required API keys
             const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+            const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+            
             if (!GOOGLE_MAPS_API_KEY) {
                 throw new Error("Google Maps API Key is not configured.");
             }
+            if (!GEMINI_API_KEY) {
+                throw new Error("Gemini API Key is not configured.");
+            }
 
-            // Step 1: Fetch Street View image with correct heading (180° rotation)
-            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=180&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
+            // Step 1: Fetch Street View image with correct heading (no rotation - front view)
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=90&heading=0&pitch=0&key=${GOOGLE_MAPS_API_KEY}`;
             const streetViewResponse = await fetch(streetViewUrl);
             if (!streetViewResponse.ok) {
                 throw new Error('Could not find a Street View image for this address. Please try a different address.');
@@ -51,27 +58,50 @@ const StreetViewGenerator: React.FC = () => {
                 reader.readAsDataURL(imageBlob);
             });
 
-            const imageForApi = {
-                mimeType: imageBlob.type,
-                data: base64data,
-            };
             setBeforeImage(`data:${imageBlob.type};base64,${base64data}`);
 
-            // Step 2: Configure Fal.ai client
+            // Step 2: Use Gemini to analyze the landscaping and suggest improvements
+            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const analysisPrompt = `Analyze this street view image of a house and its current landscaping. Provide specific, realistic recommendations for improving the landscaping while keeping the house structure exactly the same. Focus on:
+
+1. Current state of the lawn/grass
+2. Existing trees and their condition
+3. Flower beds and garden areas
+4. Driveway and walkway landscaping
+5. Overall curb appeal
+
+Provide 3-5 specific improvement suggestions that would be realistic and achievable. Be very specific about plant types, lawn improvements, and design elements. Keep the house, building colors, architecture, and hardscaping (driveways, sidewalks) exactly as they are.`;
+
+            const imageForGemini = {
+                inlineData: {
+                    data: base64data,
+                    mimeType: imageBlob.type
+                }
+            };
+
+            const analysisResult = await model.generateContent([analysisPrompt, imageForGemini]);
+            const analysisText = analysisResult.response.text();
+            setAnalysis(analysisText);
+
+            // Step 3: Create targeted prompt based on Gemini analysis
+            const targetedPrompt = `Based on this landscaping analysis, enhance ONLY the yard and landscaping areas: ${analysisText}. 
+
+CRITICAL: Keep the house structure, building colors, roof, windows, doors, siding, and driveway/hardscaping EXACTLY the same. Only improve the landscaping elements mentioned in the analysis. Maintain the same house architecture and colors perfectly.`;
+
+            // Step 4: Configure Fal.ai client and generate improved image
             fal.config({
                 credentials: process.env.FAL_API_KEY
             });
 
-            const landscapePrompt = "Enhance ONLY the landscaping and yard areas. Keep the house, building structure, architecture, colors, roof, windows, doors, and driveway EXACTLY the same. Only improve: grass to lush green lawn, add flower beds, plant trees, add shrubs, improve garden borders. Do NOT change the house structure, colors, or style. Preserve all existing buildings perfectly.";
-
-            // Use Fal.ai FLUX Pro Kontext for better preservation of house structure
             const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
                 input: {
                     image_url: `data:${imageBlob.type};base64,${base64data}`,
-                    prompt: landscapePrompt,
-                    strength: 0.4,
-                    guidance_scale: 3.5,
-                    num_inference_steps: 20,
+                    prompt: targetedPrompt,
+                    strength: 0.3,
+                    guidance_scale: 4.0,
+                    num_inference_steps: 25,
                     seed: Math.floor(Math.random() * 1000000)
                 },
                 logs: true,
@@ -83,7 +113,6 @@ const StreetViewGenerator: React.FC = () => {
             });
 
             const imageUrl = result.data.images[0].url;
-
             setAfterImage(imageUrl);
 
         } catch (err: any) {
@@ -131,8 +160,14 @@ const StreetViewGenerator: React.FC = () => {
                          </div>
                     )}
                     {error && <p className="text-red-600 bg-red-100 p-4 rounded-md">{error}</p>}
+                    {analysis && (
+                        <div className="mt-8 p-6 bg-blue-50 rounded-lg text-left">
+                            <h3 className="text-lg font-bold text-blue-800 mb-3">AI Landscaping Analysis</h3>
+                            <div className="text-blue-700 whitespace-pre-wrap">{analysis}</div>
+                        </div>
+                    )}
                     {afterImage && beforeImage && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left mt-8">
                             <div>
                                 <h3 className="text-xl font-bold text-[#6b4f4f] mb-4">Before (from Street View)</h3>
                                 <img src={beforeImage} alt="Before landscaping from Google Street View" className="rounded-lg shadow-xl w-full aspect-video object-cover" />
