@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import Button from './ui/Button';
 import { fal } from "@fal-ai/client";
 
@@ -36,8 +36,8 @@ const StreetViewGenerator: React.FC = () => {
 
         try {
             // Check for required API keys
-            const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-            const API_KEY = process.env.API_KEY;
+            const GOOGLE_MAPS_API_KEY = import.meta.env.GOOGLE_MAPS_API_KEY;
+            const API_KEY = import.meta.env.API_KEY;
             
             if (!GOOGLE_MAPS_API_KEY) {
                 throw new Error("Google Maps API Key is not configured.");
@@ -169,7 +169,7 @@ CRITICAL: Keep the house structure, architecture, roofline, windows, doors, and 
 
             // Step 4: Configure Fal.ai client and generate improved image
             fal.config({
-                credentials: process.env.FAL_API_KEY
+                credentials: import.meta.env.FAL_API_KEY
             });
 
             const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
