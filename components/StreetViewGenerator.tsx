@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import Button from './ui/Button';
+import { fal } from "@fal-ai/client";
 
 const LoadingSpinner: React.FC = () => (
     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -42,7 +43,7 @@ const StreetViewGenerator: React.FC = () => {
                 throw new Error('Could not find a Street View image for this address. Please try a different address.');
             }
             const imageBlob = await streetViewResponse.blob();
-            
+
             const reader = new FileReader();
             const base64data = await new Promise<string>((resolve, reject) => {
                 reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
@@ -56,20 +57,34 @@ const StreetViewGenerator: React.FC = () => {
             };
             setBeforeImage(`data:${imageBlob.type};base64,${base64data}`);
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-            // Step 2: Use Imagen to directly edit the landscaping while preserving the house
-            const landscapePrompt = "Transform only the yard and landscaping of this house while keeping the exact same house structure, architecture, colors, and positioning. Add beautiful landscaping including: lush green lawn, colorful flower beds, mature trees, decorative shrubs, stone or brick walkways, outdoor lighting, and well-maintained garden borders. Keep the house, driveway, and any existing structures exactly as they are. Only enhance the yard, grass, plants, and outdoor elements.";
-            
-            const imageResponse = await ai.models.generateImages({
-                model: 'imagen-3.0-edit-002',
-                prompt: landscapePrompt,
-                referenceImages: [{ image: imageForApi }],
-                config: { numberOfImages: 1, outputMimeType: 'image/jpeg' },
+            // Step 2: Configure Fal.ai client
+            fal.config({
+                credentials: process.env.API_KEY
             });
-            const base64ImageBytes = imageResponse.generatedImages[0].image.imageBytes;
-            const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
-            
+
+            const landscapePrompt = "Transform only the yard and landscaping of this house while keeping the exact same house structure, architecture, colors, and positioning. Add beautiful professional landscaping including: lush green lawn, colorful flower beds with seasonal blooms, mature shade trees, decorative shrubs, stone or brick walkways, outdoor lighting fixtures, well-maintained garden borders, and enhanced curb appeal. Keep the house, driveway, roof, windows, and any existing structures exactly as they are. Only enhance and beautify the yard, grass, plants, and outdoor landscaping elements to create a stunning, magazine-worthy exterior.";
+
+            // Use Fal.ai FLUX.1 Image-to-Image for landscaping transformation
+            const result = await fal.subscribe("fal-ai/flux/dev/image-to-image", {
+                input: {
+                    image_url: `data:${imageBlob.type};base64,${base64data}`,
+                    prompt: landscapePrompt,
+                    strength: 0.75,
+                    guidance_scale: 7.5,
+                    num_inference_steps: 28,
+                    seed: Math.floor(Math.random() * 1000000),
+                    enable_safety_checker: true
+                },
+                logs: true,
+                onQueueUpdate: (update) => {
+                    if (update.status === "IN_PROGRESS") {
+                        update.logs.map((log) => log.message).forEach(console.log);
+                    }
+                },
+            });
+
+            const imageUrl = result.data.images[0].url;
+
             setAfterImage(imageUrl);
 
         } catch (err: any) {
