@@ -1,0 +1,143 @@
+import React, { useState } from 'react';
+import { GoogleGenAI } from '@google/genai';
+import Button from './ui/Button';
+
+const LoadingSpinner: React.FC = () => (
+    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+);
+
+const StreetViewGenerator: React.FC = () => {
+    const [address, setAddress] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [beforeImage, setBeforeImage] = useState<string | null>(null);
+    const [afterImage, setAfterImage] = useState<string | null>(null);
+
+    const handleGenerate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!address) {
+            setError('Please enter an address.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        setBeforeImage(null);
+        setAfterImage(null);
+
+        try {
+            // This is a placeholder for a real API key which should be in a secure environment
+            const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+            if (!GOOGLE_MAPS_API_KEY) {
+                throw new Error("Google Maps API Key is not configured.");
+            }
+
+            // Step 1: Fetch Street View image
+            const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x600&location=${encodeURIComponent(address)}&fov=80&heading=235&pitch=10&key=${GOOGLE_MAPS_API_KEY}`;
+            const streetViewResponse = await fetch(streetViewUrl);
+            if (!streetViewResponse.ok) {
+                throw new Error('Could not find a Street View image for this address. Please try a different address.');
+            }
+            const imageBlob = await streetViewResponse.blob();
+            
+            const reader = new FileReader();
+            const base64data = await new Promise<string>((resolve, reject) => {
+                reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(imageBlob);
+            });
+
+            const imageForApi = {
+                mimeType: imageBlob.type,
+                data: base64data,
+            };
+            setBeforeImage(`data:${imageBlob.type};base64,${base64data}`);
+
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+            // Step 2: Use Gemini to generate a creative prompt
+            const descriptionPrompt = "You are a professional landscape designer. Analyze this image of a house's front yard. Generate a detailed, descriptive prompt for an AI image generator to create a new version of this yard with beautiful, modern, and lush landscaping. The prompt should describe new plants, pathways, lighting, and a vibrant green lawn, while keeping the original house structure. The prompt should be a single paragraph, ready to be used for image generation.";
+            const descriptionResponse = await ai.models.generateContent({
+                model: 'gemini-2.5-flash-preview-04-17',
+                contents: { parts: [{ inlineData: imageForApi }, { text: descriptionPrompt }] },
+            });
+            const imagePrompt = descriptionResponse.text;
+
+            // Step 3: Use Imagen to generate the new landscape image
+            const imageResponse = await ai.models.generateImages({
+                model: 'imagen-3.0-generate-002',
+                prompt: imagePrompt,
+                config: { numberOfImages: 1, outputMimeType: 'image/jpeg' },
+            });
+            const base64ImageBytes = imageResponse.generatedImages[0].image.imageBytes;
+            const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
+            
+            setAfterImage(imageUrl);
+
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <section className="py-16 bg-white">
+            <div className="container mx-auto px-6 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-[#22573b]">Restyle From The Street</h2>
+                <p className="mt-4 text-lg max-w-2xl mx-auto text-[#212529]/80">
+                    No photo? No problem. Enter your home address and our AI will use Google Street View to create a stunning new landscape design.
+                </p>
+
+                <form onSubmit={handleGenerate} className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Enter your home address"
+                        className="flex-grow px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#a3ccab]"
+                        aria-label="Home address"
+                    />
+                    <Button type="submit" variant="primary" className="py-3 px-8 text-base" disabled={isLoading}>
+                        {isLoading ? (
+                            <div className="flex items-center">
+                                <LoadingSpinner />
+                                Generating...
+                            </div>
+                        ) : 'Generate with Street View'}
+                    </Button>
+                </form>
+
+                <div className="mt-12">
+                    {isLoading && (
+                         <div className="flex flex-col items-center justify-center p-8 bg-[#f8f9fa] rounded-lg">
+                             <svg className="animate-spin h-12 w-12 text-[#22573b]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                             </svg>
+                             <p className="mt-4 text-lg font-medium text-[#22573b]">Crafting your landscape... this may take a moment.</p>
+                         </div>
+                    )}
+                    {error && <p className="text-red-600 bg-red-100 p-4 rounded-md">{error}</p>}
+                    {afterImage && beforeImage && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                            <div>
+                                <h3 className="text-xl font-bold text-[#6b4f4f] mb-4">Before (from Street View)</h3>
+                                <img src={beforeImage} alt="Before landscaping from Google Street View" className="rounded-lg shadow-xl w-full aspect-video object-cover" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-[#22573b] mb-4">After (AI Design)</h3>
+                                <img src={afterImage} alt="After AI landscaping design" className="rounded-lg shadow-xl w-full aspect-video object-cover" />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default StreetViewGenerator;

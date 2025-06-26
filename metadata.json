@@ -1,0 +1,5 @@
+{
+  "name": "AI Landscaping",
+  "description": "An AI-powered SaaS tool that allows users to upload a picture of their home's exterior or yard and receive an AI-generated image showcasing a new landscaping design.",
+  "requestFramePermissions": []
+}
